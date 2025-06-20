@@ -16,11 +16,11 @@ public class LandingView extends VerticalLayout {
         setJustifyContentMode(JustifyContentMode.CENTER);
         getStyle().set("background-color", "#F5F7FA");
 
-        // Title
+      
         H1 title = new H1("Welcome to Blogy");
         title.getStyle().set("font-size", "96px").set("margin-bottom", "40px");
 
-        // Thin arrow using Unicode
+       
         Span arrow = new Span("→");
         arrow.getStyle()
                 .set("font-size", "60px")
