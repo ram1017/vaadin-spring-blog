@@ -1,7 +1,7 @@
 package com.example.app.model;
 
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
+
 
 @Entity
 public class Post {
@@ -14,7 +14,7 @@ public class Post {
     private String content;
     private Integer userId;
     private String imageUrl;
-    private LocalDateTime createdAt;
+    
 
     public Integer getId() {
         return id;
@@ -56,11 +56,4 @@ public class Post {
         this.imageUrl = imageUrl;
     }
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
 }
