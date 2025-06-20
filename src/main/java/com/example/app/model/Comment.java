@@ -1,7 +1,7 @@
 package com.example.app.model;
 
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
+
 
 @Entity
 public class Comment {
@@ -11,8 +11,6 @@ public class Comment {
     private String comment;
     private Integer userId;
     private Integer postId;
-
-    private LocalDateTime createdAt;
 
 
 

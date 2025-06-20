@@ -36,4 +36,7 @@ public class PostService {
     }
 
 
+    public void deleteById(Integer id) {
+        postRepository.deleteById(id);
+    }
 }
