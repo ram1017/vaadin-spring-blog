@@ -1,13 +1,14 @@
 package com.example.app;
 
 import com.vaadin.flow.component.page.AppShellConfigurator;
+import com.vaadin.flow.component.page.Push;
 import com.vaadin.flow.theme.Theme;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
 import java.time.Clock;
-
+@Push
 @SpringBootApplication
 @Theme("default")
 public class Application implements AppShellConfigurator {

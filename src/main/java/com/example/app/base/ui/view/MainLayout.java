@@ -1,80 +1,94 @@
 package com.example.app.base.ui.view;
 
-import com.vaadin.flow.component.Component;
+
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
-import com.vaadin.flow.component.avatar.Avatar;
-import com.vaadin.flow.component.avatar.AvatarVariant;
-import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.icon.Icon;
-import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.menubar.MenuBar;
-import com.vaadin.flow.component.menubar.MenuBarVariant;
-import com.vaadin.flow.component.orderedlayout.Scroller;
-import com.vaadin.flow.component.sidenav.SideNav;
-import com.vaadin.flow.component.sidenav.SideNavItem;
-import com.vaadin.flow.router.Layout;
-import com.vaadin.flow.server.menu.MenuConfiguration;
-import com.vaadin.flow.server.menu.MenuEntry;
-import jakarta.annotation.security.PermitAll;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.html.H5;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.router.RouterLink;
+import com.vaadin.flow.server.VaadinService;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 
-import static com.vaadin.flow.theme.lumo.LumoUtility.*;
+public class MainLayout extends AppLayout {
 
-@Layout
-@PermitAll // When security is enabled, allow all authenticated users
-public final class MainLayout extends AppLayout {
+    public MainLayout() {
+        String currentPath = VaadinService.getCurrentRequest().getPathInfo();
+        OidcUser authuser = (OidcUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String email = authuser.getEmail();
+        String username = email.split("@")[0];
 
-    MainLayout() {
-        setPrimarySection(Section.DRAWER);
-        addToDrawer(createHeader(), new Scroller(createSideNav()), createUserMenu());
-    }
+        RouterLink blogsLink = new RouterLink("Blogs", PostView.class);
+        RouterLink myBlogsLink = new RouterLink("My Blogs", PostMyView.class);
 
-    private Div createHeader() {
-        // TODO Replace with real application logo and name
-        var appLogo = VaadinIcon.CUBES.create();
-        appLogo.addClassNames(TextColor.PRIMARY, IconSize.LARGE);
 
-        var appName = new Span("Blogging");
-        appName.addClassNames(FontWeight.SEMIBOLD, FontSize.LARGE);
-
-        var header = new Div(appLogo, appName);
-        header.addClassNames(Display.FLEX, Padding.MEDIUM, Gap.MEDIUM, AlignItems.CENTER);
-        return header;
-    }
-
-    private SideNav createSideNav() {
-        var nav = new SideNav();
-        nav.addClassNames(Margin.Horizontal.MEDIUM);
-        MenuConfiguration.getMenuEntries().forEach(entry -> nav.addItem(createSideNavItem(entry)));
-        return nav;
-    }
-
-    private SideNavItem createSideNavItem(MenuEntry menuEntry) {
-        if (menuEntry.icon() != null) {
-            return new SideNavItem(menuEntry.title(), menuEntry.path(), new Icon(menuEntry.icon()));
-        } else {
-            return new SideNavItem(menuEntry.title(), menuEntry.path());
+        if (currentPath != null && currentPath.contains("home")) {
+            blogsLink.getStyle().set("font-weight", "bold").set("border-bottom", "2px solid black");
+        } else if (currentPath != null && currentPath.contains("my-blogs")) {
+            myBlogsLink.getStyle().set("font-weight", "bold").set("border-bottom", "2px solid black");
         }
+
+
+        blogsLink.getStyle()
+                .set("margin", "0 15px")
+                .set("text-decoration", "none")
+                .set("color", "black")
+                .set("font-size", "24px");
+
+        myBlogsLink.getStyle()
+                .set("margin", "0 15px")
+                .set("text-decoration", "none")
+                .set("color", "black")
+                .set("font-size", "24px");
+
+        HorizontalLayout centerLayout = new HorizontalLayout(blogsLink, myBlogsLink);
+        centerLayout.setAlignItems(FlexComponent.Alignment.CENTER);
+        centerLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
+        centerLayout.setSpacing(true);
+        centerLayout.setWidthFull();
+
+        Button logout = new Button("Logout", e ->
+                UI.getCurrent().getPage().setLocation("/logout")
+        );
+
+        H5 h5 = new H5("Hello!"+username);
+        h5.getStyle().set("color", "black")
+                .set("border-radius", "8px")
+                .set("font-size", "24px")
+                .set("padding", "8px 16px")
+                .set("text-decoration", "none")
+
+                .set("font-weight", "200");
+
+        logout.getStyle()
+                .set("background-color", "transparent")
+                .set("color", "black")
+                .set("border-radius", "8px")
+                .set("font-size", "24px")
+                .set("padding", "8px 16px")
+                .set("text-decoration", "none")
+
+                .set("font-weight", "200");
+
+        HorizontalLayout logoutLayout = new HorizontalLayout(logout);
+        HorizontalLayout nameLayout = new HorizontalLayout(h5);
+
+        nameLayout.setAlignItems(FlexComponent.Alignment.CENTER);
+        nameLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.START);
+        nameLayout.setWidth("auto");
+
+        logoutLayout.setAlignItems(FlexComponent.Alignment.CENTER);
+        logoutLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.END);
+        logoutLayout.setWidth("auto");
+
+        HorizontalLayout navBar = new HorizontalLayout();
+        navBar.setWidthFull();
+        navBar.setAlignItems(FlexComponent.Alignment.CENTER);
+        navBar.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);
+        navBar.add(nameLayout,centerLayout, logoutLayout);
+
+        addToNavbar(navBar);
     }
-
-    private Component createUserMenu() {
-        // TODO Replace with real user information and actions
-        var avatar = new Avatar("John Smith");
-        avatar.addThemeVariants(AvatarVariant.LUMO_XSMALL);
-        avatar.addClassNames(Margin.Right.SMALL);
-        avatar.setColorIndex(5);
-
-        var userMenu = new MenuBar();
-        userMenu.addThemeVariants(MenuBarVariant.LUMO_TERTIARY_INLINE);
-        userMenu.addClassNames(Margin.MEDIUM);
-
-        var userMenuItem = userMenu.addItem(avatar);
-        userMenuItem.add("John Smith");
-        userMenuItem.getSubMenu().addItem("View Profile").setEnabled(false);
-        userMenuItem.getSubMenu().addItem("Manage Settings").setEnabled(false);
-        userMenuItem.getSubMenu().addItem("Logout").setEnabled(false);
-
-        return userMenu;
-    }
-
 }
